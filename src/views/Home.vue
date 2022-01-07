@@ -12,6 +12,10 @@
     </div>
   </section>
   <h4 class="font-weight-bold text-center">发现精彩</h4>
+  <column-list :list="list"></column-list>
+  <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25">
+    加载更多
+  </button>
 </div>
 </template>
 
