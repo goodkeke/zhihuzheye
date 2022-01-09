@@ -1,5 +1,6 @@
 <template>
 <div class="home-page">
+<!--  <h2>{{bigColumnLen}}</h2>-->
   <section class="py-5 text-center container">
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
@@ -19,9 +20,10 @@
 </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-import { testData } from "../common/testData";
+<script lang="ts">
+import {computed, defineComponent} from 'vue'
+import {GlobalDataProps} from '../store/index'
+import {useStore} from 'vuex'
 import ColumnList from "../components/ColumnList.vue";
 export default defineComponent({
   name: "Home",
@@ -29,8 +31,12 @@ export default defineComponent({
     ColumnList
   },
   setup() {
+    const store = useStore<GlobalDataProps>()
+    const bigColumnLen = store.getters.bigColumnsLen
+    const list =  computed(() => store.state.columns)
     return {
-      list: testData
+      list,
+      bigColumnLen
     }
   }
 })

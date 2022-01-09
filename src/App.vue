@@ -17,7 +17,8 @@
   </div>
 </template>
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {computed, defineComponent, ref} from 'vue'
+import {useStore} from "vuex";
 import Login from './views/Login.vue'
 import GlobalHeader from "./components/GlobalHeader.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -27,7 +28,9 @@ export default defineComponent({
     Login,GlobalHeader
   },
   setup(){
-    const currentUser = ref('')
+    const store = useStore()
+    // const currentUser = ref('')
+    const currentUser = computed(() => {stor.state.user})
     return{
       currentUser
     }
