@@ -90,7 +90,7 @@ export interface PostProps {
     content?: string
     image? : ImageProps
     createdAt: string
-    columnId: number
+    column: number
 }
 
 export default store
