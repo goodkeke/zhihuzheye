@@ -56,10 +56,10 @@ export default defineComponent({
           email: emailVal.value,
           password: passwordVal.value
         }
-        const data = await axios.post(`/user/login`, params)
-        console.log('ddaadadadadad----->', data)
-        // router.push('/')
-        // store.commit('login')
+         store.dispatch('loginAndFetch', params).then(data => {
+           console.log('data2222====>', data)
+           router.push('/')
+         })
       }
     }
     return{

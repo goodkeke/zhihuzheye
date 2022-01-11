@@ -17,21 +17,29 @@
   </div>
 </template>
 <script lang="ts">
-import {computed, defineComponent, ref} from 'vue'
+import {computed, defineComponent, onMounted, ref} from 'vue'
 import {useStore} from "vuex";
+import {GlobalDataProps} from "./store";
 import Login from './views/Login.vue'
 import GlobalHeader from "./components/GlobalHeader.vue";
 import Loader from "./components/Loader.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'
+import axios from "axios";
 export default defineComponent({
   components: {
     Login,GlobalHeader,Loader
   },
   setup(){
-    const store = useStore()
+    const store = useStore<GlobalDataProps>()
     const currentUser = computed(() => store.state.user)
     const isLoading = computed(() => store.state.loading)
-    console.log('1111111111=====>', store.state)
+    const token = computed(() => store.state.token)
+    onMounted(async () => {
+      if(!currentUser.value.isLogin && token.value){
+        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+        const data = await store.dispatch('fetchCurrentUser')
+      }
+    })
     return{
       isLoading,
       currentUser
