@@ -1,15 +1,14 @@
 import { createApp } from 'vue'
 import axios from "axios";
-import store from "./store/index"
-import router from './router/index'
+import store from "./store"
+import router from './router'
 import App from './App.vue'
-import {createRequire} from 'module'
 
 
 const icode = 'AB45921CA1348422'
 axios.defaults.baseURL = 'http://apis.imooc.com/api/'
 axios.interceptors.request.use((config) => {
-    console.log('config===>', config)
+    store.commit('setLoading', true)
     config.params = {
         ...config.params,
         icode
@@ -22,7 +21,12 @@ axios.interceptors.request.use((config) => {
     return config
 })
 axios.interceptors.response.use((res) => {
+    setTimeout(() => {
+        store.commit('setLoading', false)
+    },500)
     return res
+}, error => {
+    return Promise.reject(error)
 })
 
 axios.get(`/columns`).then(res => {

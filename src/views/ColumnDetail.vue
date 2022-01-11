@@ -1,10 +1,10 @@
 <template>
   <div class="column-detail-page w-75 mx-auto">
-    <div class="column-info row mb-4 border-bottom pb-4 align-items-center" v-if="column" >
-      <div class="col-3 text-center">
+    <div class="column-info row mb-4 border-bottom pb-4 justify-content-start align-items-center" v-if="column" >
+      <div class="col-2 text-center">
         <img :src="column.avatar && column.avatar.url" class="rounded-circle border"/>
       </div>
-      <div class="col-9 text-start flex-grow-1">
+      <div class="col-10 text-start flex-grow-1">
         <h4>{{column.title}}</h4>
         <p class="text-muted">{{column.description}}</p>
       </div>

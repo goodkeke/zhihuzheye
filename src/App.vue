@@ -1,12 +1,12 @@
-
 <template>
   <div class="container">
-    <global-header user="currentUser"></global-header>
+    <global-header :user="currentUser"></global-header>
+    <loader v-if="isLoading"></loader>
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
       <small>
         <ul class="list-inline mb-0">
-          <li class="list-inline-item">© 2020 者也专栏</li>
+          <li class="list-inline-item">© 2020 知乎专栏</li>
           <li class="list-inline-item">课程</li>
           <li class="list-inline-item">文档</li>
           <li class="list-inline-item">联系</li>
@@ -21,17 +21,19 @@ import {computed, defineComponent, ref} from 'vue'
 import {useStore} from "vuex";
 import Login from './views/Login.vue'
 import GlobalHeader from "./components/GlobalHeader.vue";
+import Loader from "./components/Loader.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'
-
 export default defineComponent({
   components: {
-    Login,GlobalHeader
+    Login,GlobalHeader,Loader
   },
   setup(){
     const store = useStore()
-    // const currentUser = ref('')
-    const currentUser = computed(() => {stor.state.user})
+    const currentUser = computed(() => store.state.user)
+    const isLoading = computed(() => store.state.loading)
+    console.log('1111111111=====>', store.state)
     return{
+      isLoading,
       currentUser
     }
   }

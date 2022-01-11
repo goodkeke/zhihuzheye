@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
-    <router-link to="/" class="navbar-brand">者也专栏</router-link >
+    <router-link to="/" class="navbar-brand">知乎专栏</router-link >
     <ul v-if="user.isLogin" class="list-inline mb-0">
       <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">登陆</router-link></li>
       <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">注册</router-link></li>
@@ -37,7 +37,7 @@ export default defineComponent({
     }
   },
   setup(props){
-    console.log('props.user', props.user)
+    console.log('props.user====>', props.user)
     return {}
   }
 })

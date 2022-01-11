@@ -27,11 +27,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import {computed, defineComponent, ref} from 'vue'
 import { useRouter } from 'vue-router' // 定义路由的行为
 import ValidateForm from "../components/ValidateForm.vue";
 import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
 import {useStore} from "vuex";
+import axios from "axios";
 
 export default defineComponent({
   name: "Login",
@@ -40,24 +41,25 @@ export default defineComponent({
   setup(props){
     const router = useRouter()
     const store = useStore()
-    const emailVal = ref('')
+    const emailVal = ref('111@test.com')
     const emailRules: RulesProp = [
       {type: 'required', message: '电子邮箱地址不能为空'},
       {type: 'email', message: '请输入正确的电子邮箱格式'},
     ]
-    const passwordVal = ref('')
+    const passwordVal = ref('111111')
     const passwordRules: RulesProp = [
       {type: 'required', message: '密码不能为空'}
     ]
-    const onFormSubmit = (res: boolean) => {
-      console.log('res===>', res)
+    const onFormSubmit = async (res: boolean) => {
       if(res){
-        const payload = {
+        const params = {
           email: emailVal.value,
           password: passwordVal.value
         }
-        router.push('/')
-        store.commit('login')
+        const data = await axios.post(`/user/login`, params)
+        console.log('ddaadadadadad----->', data)
+        // router.push('/')
+        // store.commit('login')
       }
     }
     return{

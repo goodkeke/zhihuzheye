@@ -1,14 +1,16 @@
-import {createStore} from "vuex";
+import {Commit, createStore} from "vuex";
 import axios from "axios";
-import {testData, testPosts} from '../common/testData'
+import {safeOnMounted} from "ahooks-vue/dist/src/utils";
 const store = createStore<GlobalDataProps>({
     state: {
+        loading: false,
         columns: [],
         posts: [],
         user: { isLogin: false, nickname: 'Kyunwoo', columnId: 1}
     },
     mutations: {
-        login(state){
+        login(state, data){
+            console.log('login data=========>', data)
             state.user = {...state.user, isLogin: false, nickname: 'Kyunwoo', columnId: 1}
         },
         createPost(state, newPost){
@@ -18,30 +20,32 @@ const store = createStore<GlobalDataProps>({
             state.columns = rowData.data.list
         },
         fetchDetail(state, rowData){
-            console.log('rowData=====>', rowData)
             state.columns = [rowData.data]
         },
         fetchPosts(state, rowData){
             state.posts = rowData.data.list
+        },
+        setLoading(state, status){
+            state.loading = status
         }
     },
     actions: {
-        fetchColumns(context) {
-            console.log('contextttttt', context)
-            axios.get('/columns').then(res => {
-                context.commit('fetchColumns', res.data)
-            })
+        fetchColumns({commit}){
+            getAndCommit(`/columns`, 'fetchColumns', commit)
         },
         fetchDetail({commit}, cid) {
-            axios.get(`/columns/${cid}`).then(res => {
-                commit('fetchDetail', res.data)
-            })
+            getAndCommit(`/columns/${cid}`, 'fetchDetail', commit)
         },
         fetchPosts({commit}, cid) {
-            axios.get(`/columns/${cid}/posts`).then(res => {
-                commit('fetchPosts', res.data)
-            })
+            getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+        },
+        login({commit}, payload){
+            postAndCommit()
         }
+        // async mLogin({commit}, params) {
+        //     const data = await axios.post(`/user/login`, params)
+        //     commit('login', data)
+        // }
     },
     getters: { // getters返回值会依赖根据缓存，且当依赖值发生改变时才会被重新计算
         bigColumnsLen(state){
@@ -55,8 +59,19 @@ const store = createStore<GlobalDataProps>({
         }
     }
 })
+const postAndCommit = async (url:string, mutationName: string, commit: Commit, payload: any){
+    const {data} = await axios.post(url, payload)
+    commit(mutationName, data)
+}
+
+const getAndCommit = async (url:string, mutationName: string, commit: Commit) => {
+    const {data} = await axios.get(url)
+    commit(mutationName, data)
+}
+
  export interface GlobalDataProps{
-    columns: ColumnProps[]
+     loading: boolean
+     columns: ColumnProps[]
      posts: PostProps[]
      user: UserProps
  }
@@ -90,7 +105,7 @@ export interface PostProps {
     content?: string
     image? : ImageProps
     createdAt: string
-    column: number
+    column: string
 }
 
 export default store
