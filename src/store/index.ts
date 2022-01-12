@@ -3,6 +3,7 @@ import axios from "axios";
 import {safeOnMounted} from "ahooks-vue/dist/src/utils";
 const store = createStore<GlobalDataProps>({
     state: {
+        error: {status: false},
         token: localStorage.getItem('token') || '',
         loading: false,
         columns: [],
@@ -32,6 +33,9 @@ const store = createStore<GlobalDataProps>({
         setLoading(state, status){
             state.loading = status
         },
+        setError(state, e: GlobalErrorProps){
+            state.error = e
+        },
         login(state, rawData){
             const {token} = rawData.data
             state.token = token
@@ -50,15 +54,15 @@ const store = createStore<GlobalDataProps>({
             getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
         },
         fetchCurrentUser({commit}){
-           return getAndCommit(`/user/current`, 'fetchCurrentUser', commit)
+            return getAndCommit(`/user/current`, 'fetchCurrentUser', commit)
         },
         login({commit}, payload){
-           return postAndCommit(`/user/login`, 'login', commit, payload)
+            return postAndCommit(`/user/login`, 'login', commit, payload)
         },
         loginAndFetch({dispatch}, loginData){
-           return dispatch('login', loginData).then(() => {
-              return dispatch('fetchCurrentUser')
-          })
+            return dispatch('login', loginData).then(() => {
+                return dispatch('fetchCurrentUser')
+            })
         }
         // async mLogin({commit}, params) {
         //     const data = await axios.post(`/user/login`, params)
@@ -88,13 +92,20 @@ const getAndCommit = async (url:string, mutationName: string, commit: Commit) =>
     return data
 }
 
- export interface GlobalDataProps{
-     token: string
-     loading: boolean
-     columns: ColumnProps[]
-     posts: PostProps[]
-     user: UserProps
- }
+// 通用错误处理
+export interface GlobalErrorProps {
+    status: boolean
+    message?: string
+}
+
+export interface GlobalDataProps{
+    error: GlobalErrorProps
+    token: string
+    loading: boolean
+    columns: ColumnProps[]
+    posts: PostProps[]
+    user: UserProps
+}
 
 export interface UserProps {
     isLogin: boolean;

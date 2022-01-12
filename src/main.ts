@@ -25,8 +25,11 @@ axios.interceptors.response.use((res) => {
         store.commit('setLoading', false)
     },500)
     return res
-}, error => {
-    return Promise.reject(error)
+}, e => {
+    const {error, code} = e.response.data
+    store.commit('setError', {status: true, message: error})
+    store.commit('setLoading', false)
+    return Promise.reject(e) //important
 })
 
 axios.get(`/columns`).then(res => {

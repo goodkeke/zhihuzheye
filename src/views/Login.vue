@@ -41,12 +41,12 @@ export default defineComponent({
   setup(props){
     const router = useRouter()
     const store = useStore()
-    const emailVal = ref('111@test.com')
+    const emailVal = ref('')
     const emailRules: RulesProp = [
       {type: 'required', message: '电子邮箱地址不能为空'},
       {type: 'email', message: '请输入正确的电子邮箱格式'},
     ]
-    const passwordVal = ref('111111')
+    const passwordVal = ref('')
     const passwordRules: RulesProp = [
       {type: 'required', message: '密码不能为空'}
     ]
@@ -56,10 +56,11 @@ export default defineComponent({
           email: emailVal.value,
           password: passwordVal.value
         }
-         store.dispatch('loginAndFetch', params).then(data => {
-           console.log('data2222====>', data)
-           router.push('/')
-         })
+        store.dispatch('loginAndFetch', params).then(data => {
+          router.push('/')
+        }).catch(e => {
+          console.log(e)
+        })
       }
     }
     return{
