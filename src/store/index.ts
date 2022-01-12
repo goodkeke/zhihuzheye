@@ -1,6 +1,7 @@
 import {Commit, createStore} from "vuex";
 import axios from "axios";
 import {safeOnMounted} from "ahooks-vue/dist/src/utils";
+import router from "../router";
 const store = createStore<GlobalDataProps>({
     state: {
         error: {status: false},
@@ -41,6 +42,12 @@ const store = createStore<GlobalDataProps>({
             state.token = token
             localStorage.setItem('token', token)
             axios.defaults.headers.common.Authorization = `Bearer ${token}`
+        },
+        setLogout(state) {
+            state.token = ''
+            state.user = {isLogin: false}
+            localStorage.removeItem('token')
+            // router.push('/login')
         }
     },
     actions: {
@@ -63,6 +70,9 @@ const store = createStore<GlobalDataProps>({
             return dispatch('login', loginData).then(() => {
                 return dispatch('fetchCurrentUser')
             })
+        },
+        logout({commit}){
+            commit('setLogout')
         }
         // async mLogin({commit}, params) {
         //     const data = await axios.post(`/user/login`, params)

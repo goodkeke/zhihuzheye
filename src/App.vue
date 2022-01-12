@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <global-header :user="currentUser"></global-header>
-    <h1>{{error.message}}</h1>
     <loader v-if="isLoading"></loader>
+<!--    <message type="error" :message="error.message" v-if="error.status"-->
+<!--             @close-message="closeMessage"></message>-->
     <router-view></router-view>
     <footer class="text-center py-4 text-secondary bg-light mt-6">
       <small>
@@ -18,7 +19,7 @@
   </div>
 </template>
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref} from 'vue'
+import {computed, defineComponent, onMounted, ref, watch} from 'vue'
 import {useStore} from "vuex";
 import {GlobalDataProps} from "./store";
 import Login from './views/Login.vue'
@@ -26,6 +27,8 @@ import GlobalHeader from "./components/GlobalHeader.vue";
 import Loader from "./components/Loader.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import axios from "axios";
+// import Message from "./components/Message.vue";
+import createMessage from "./components/CreateMessage";
 export default defineComponent({
   components: {
     Login,GlobalHeader,Loader
@@ -42,9 +45,19 @@ export default defineComponent({
         const data = await store.dispatch('fetchCurrentUser')
       }
     })
+    // const closeMessage = (e: boolean) => {
+    //   error.value.status = false
+    // }
+    watch(() => error.value.status, () => {
+      const {status, message} = error.value
+      if(status && message) {
+        createMessage(message, 'error')
+      }
+    })
     return{
       isLoading,
       currentUser,
+      // closeMessage,
       error
     }
   }

@@ -31,6 +31,7 @@ import {computed, defineComponent, ref} from 'vue'
 import { useRouter } from 'vue-router' // 定义路由的行为
 import ValidateForm from "../components/ValidateForm.vue";
 import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
+import createMessage from "../components/CreateMessage";
 import {useStore} from "vuex";
 import axios from "axios";
 
@@ -57,6 +58,8 @@ export default defineComponent({
           password: passwordVal.value
         }
         store.dispatch('loginAndFetch', params).then(data => {
+          console.log('登录成功', data)
+          createMessage('登录成功', 'success')
           router.push('/')
         }).catch(e => {
           console.log(e)
