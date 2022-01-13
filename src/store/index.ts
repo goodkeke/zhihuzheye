@@ -1,7 +1,5 @@
 import {Commit, createStore} from "vuex";
 import axios from "axios";
-import {safeOnMounted} from "ahooks-vue/dist/src/utils";
-import router from "../router";
 const store = createStore<GlobalDataProps>({
     state: {
         error: {status: false},
@@ -12,10 +10,6 @@ const store = createStore<GlobalDataProps>({
         user: { isLogin: false}
     },
     mutations: {
-        // login(state, data){
-        //     console.log('login data=========>', data)
-        //     state.user = {...state.user, isLogin: false, nickName: 'Kyunwoo', columnId: 1}
-        // },
         createPost(state, newPost){
             state.posts.push(newPost)
         },

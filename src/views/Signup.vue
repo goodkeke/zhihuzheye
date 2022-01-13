@@ -1,6 +1,6 @@
 <template>
   <div class="signup-page mx-auto p-3 w-330">
-    <validate-form @form-submit="submit">
+    <validate-form @form-submit="submit" btn-text="注册新用户">
       <div class="mb-3 d-flex flex-row justify-content-start align-items-center">
         <label class="form-label">邮箱地址 :</label>
         <div class="flex-grow-1">
@@ -43,16 +43,19 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref} from 'vue'
+import {defineComponent, onMounted, ref} from 'vue'
+import {useRouter} from "vue-router";
 import ValidateForm from "../components/ValidateForm.vue";
-import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
+import ValidateInput from "../components/ValidateInput.vue";
+import createMessage from "../components/CreateMessage";
 import axios from "axios";
 
 export default defineComponent({
   components: {ValidateInput, ValidateForm},
   props: {},
-  setup(props){
-    onMounted((data) => {
+  setup(){
+    const router = useRouter()
+    onMounted(() => {
       if (localStorage.getItem('formData')){
         model.value = JSON.parse(localStorage.getItem('formData'))
       }
@@ -71,21 +74,22 @@ export default defineComponent({
       ],
       pwdAgainRules: [
         {type: 'required', message: '请再次输入密码'},
-        {type: 'custom', message: '两次密码不一致', validator: () => {
-            if(model.value.password !== model.value.password2){
-              return false
-            }else {
-              return true
-            }
-          }},
+        {type: 'custom',
+          validator: () => {
+            return model.value.password === model.value.password2
+          },
+          message: '两次密码不一致'
+        },
       ]
     })
-    const submit = (res: boolean) =>{
+    const submit = async (res: boolean) =>{
       if(res){
-        let {password2, ...params} = {...model.value}
-        localStorage.setItem('formData', JSON.stringify(params))
-        console.log('resssss=====>', params)
-        axios.post('/users', params).then(res => {
+        let {password2, ...payload} = {...model.value}
+        localStorage.setItem('formData', JSON.stringify(payload))
+        axios.post('/users/', payload).then(() =>{
+          localStorage.removeItem('formData')
+          createMessage('注册成功', 'success')
+          router.push('/')
         })
       }
     }

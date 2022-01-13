@@ -3,7 +3,7 @@
     <slot name="default"></slot>
     <div class="submit-area" @click.prevent="submitForm">
       <slot name="submit">
-        <button type="submit" class="btn btn-primary">提交</button>
+        <button type="submit" class="btn btn-primary">{{btnText}}</button>
       </slot>
     </div>
   </form>
@@ -15,6 +15,12 @@ type ValidateFunc = () => boolean
 export const emitter = mitt()
 export default defineComponent({
   emits: ['form-submit'],
+  props: {
+    btnText: {
+      type: String,
+      default: '提交'
+    }
+  },
   setup(props, context) {
     let funcArr: ValidateFunc[] = [];
     const submitForm = ()=> {

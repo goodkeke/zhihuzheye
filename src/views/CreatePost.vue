@@ -1,6 +1,8 @@
 <template>
   <div class="create-post-page container">
     <h4>新建文章</h4>
+<!--    <input type="file" name="file" @change="handlerFileChange"/>-->
+    <upload class="my-3"></upload>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3 d-flex flex-row justify-content-start align-items-center">
         <label class="form-label">文章标题 :</label>
@@ -33,18 +35,17 @@
 
 <script lang="ts">
 import {defineComponent, onUnmounted, ref} from "vue";
+import Upload from "../components/Upload.vue";
 import ValidateForm from "../components/ValidateForm.vue";
 import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
-import {GlobalDataProps} from '../store'
-import {PostProps} from '../common/testData'
+import {GlobalDataProps, PostProps} from '../store'
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import axios from "axios";
 
 export default defineComponent({
   name: "CreatePost",
-  components: {ValidateInput, ValidateForm},
-  props: {
-  },
+  components: {ValidateInput, ValidateForm, Upload},
   setup() {
     const router = useRouter()
     const store = useStore<GlobalDataProps>()
@@ -59,18 +60,36 @@ export default defineComponent({
     ]
     const onFormSubmit = (res: boolean) => {
       if(res) {
-        const {columnId} = store.state.user
-        if(columnId) {
+        const {column} = store.state.user
+        if(column) {
           const newPost: PostProps = {
-            id: new Date().getTime(),
             title: titleVal.value,
             content: contentVal.value,
-            columnId,
-            createdAt: new Date().toLocaleString()
+            column
           }
           store.commit('createPost', newPost)
-          router.push({name: 'column', params: {id: columnId}})
+          router.push({name: 'column', params: {id: column}})
         }
+      }
+    }
+    const handlerFileChange = (e: Event) => {    //input 事件对象
+      const target = e.target as HTMLInputElement
+      const file = target.files
+      if(file){
+        const uploadFile = file[0]  //只选择一个文件
+        // 模拟表单数据 使用formData对象
+        const formData = new FormData()
+        formData.append(uploadFile.name, uploadFile) //添加input值
+
+        console.log('target1111====>',formData)
+        axios.post('/upload', formData, {
+          // 添加一个content-type
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((res: any) => {
+          console.log('file res2222====>',res)
+        })
       }
     }
     return {
@@ -78,7 +97,8 @@ export default defineComponent({
       titleRules,
       contentVal,
       contentRules,
-      onFormSubmit
+      onFormSubmit,
+      handlerFileChange
     }
   }
 })
