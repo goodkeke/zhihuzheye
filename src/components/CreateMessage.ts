@@ -1,19 +1,17 @@
-import Message from "./Message.vue";
-import {createApp, onUnmounted} from "vue";
-
+import Message from './Message.vue'
+import {createApp} from "vue";
 export type MessageType = 'success' | 'error' | 'default'
-const createMessage = (message:string,type:MessageType,timeout=2000) => {
-    const messageInstance = createApp(Message, {
+const createMessage = (message: string, type: string, timeout = 2000) => {
+    const messageAlert = createApp(Message, {
         message,
         type
     })
-    const mountNode = document.createElement('div') // 创建一个DOM节点
-    document.body.appendChild(mountNode)  // 添加节点
-    messageInstance.mount(mountNode)        // 节点挂载组件
+    const node = document.createElement('div')
+    document.body.appendChild(node)
+    messageAlert.mount(node)
     setTimeout(() => {
-        messageInstance.unmount(mountNode)      // 节点卸载组件
-        document.body.removeChild(mountNode)    // 删除节点
-    },timeout)
+        messageAlert.unmount(node)
+        document.body.removeChild(node)
+    }, timeout)
 }
-
 export default createMessage

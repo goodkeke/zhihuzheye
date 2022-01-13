@@ -6,7 +6,7 @@
         <div class="flex-grow-1">
           <validate-input type="text"
                           ref="inputRef"
-                          v-model="model.emailVal"
+                          v-model="model.email"
                           :rules="rule.emailRules"
                           placeholder="请输入邮箱地址"></validate-input>
         </div>
@@ -15,7 +15,7 @@
         <label class="form-label">昵称 :</label>
         <div class="flex-grow-1">
           <validate-input type="text"
-                          v-model="model.nickname"
+                          v-model="model.nickName"
                           :rules="rule.nameRules"
                           placeholder="请输入昵称"></validate-input>
         </div>
@@ -43,14 +43,20 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from 'vue'
+import {computed, defineComponent, onMounted, ref} from 'vue'
 import ValidateForm from "../components/ValidateForm.vue";
 import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
+import axios from "axios";
 
 export default defineComponent({
   components: {ValidateInput, ValidateForm},
   props: {},
   setup(props){
+    onMounted((data) => {
+      if (localStorage.getItem('formData')){
+        model.value = JSON.parse(localStorage.getItem('formData'))
+      }
+    })
     const model = ref({})
     const rule = ref({
       emailRules: [
@@ -74,7 +80,15 @@ export default defineComponent({
           }},
       ]
     })
-    const submit = () =>{}
+    const submit = (res: boolean) =>{
+      if(res){
+        let {password2, ...params} = {...model.value}
+        localStorage.setItem('formData', JSON.stringify(params))
+        console.log('resssss=====>', params)
+        axios.post('/users', params).then(res => {
+        })
+      }
+    }
     return{
       rule,
       model,

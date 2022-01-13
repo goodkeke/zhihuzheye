@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+<button>点击按钮</button>
+<script type="text/javascript">
+  const PENDING = 'pending'
+  const RESOLVE = 'resolve'
+  const REJECTE = 'reject'
+
+  function resolvePromise(p2, x, resolve, reject) {
+    if (p2 === x) {
+      return reject(new TypeError('类型错误'))
+    }
+    let called = false
+    // 以then()方法来区分是否为promise
+    if ((typeof x === 'object'&& x !== null) || typeof x === 'function'){
+       try {
+         const then = x.then
+         if(typeof then === 'function'){
+            then.call(
+              x,
+              (y) => {
+                if(called) return
+                called = true
+                // y有可能还是promise
+                resolvePromise(p2, y, resolve, reject)
+              },
+              (x) => {
+                if(called) return
+                called = true
+                reject(x)
+              }
+            )
+         }else {
+           if(called) return
+           called = true
+           resolve(x)
+         }
+       }catch (err){
+         if(called) return
+         called = true
+         reject(err)
+      }
+    }else {
+      if(called) return
+      called = true
+        resolve(x) // x为基本值 直接resolve
+    }
+  }
+
+  class MyPromise {
+    constructor(fn) {
+      this.status = PENDING
+      this.value = undefined
+      this.error = undefined
+      // 11、处理异步调用的resolve & 并且能够多次调用then方法（then传进来的方法存起来，状态改变时候再去调用）
+      //.then()时将错误或失败的回调 存放这个函数里面，在调用了reject/resolve的时候再拿出来
+      // 成功处理函数的集合
+      this.onFulFillCallbacks = []
+      // 失败处理函数的集合
+      this.onRejectCallbacks = []
+
+      const resolve = (value) => {
+        //  保证状态的唯一性，只有pending状态 才能改变
+        if(this.status === PENDING) {
+          this.status = RESOLVE
+          this.value = value
+          // 在调用resolve时遍历函数
+          this.onFulFillCallbacks.forEach(cb => cb())
+        }
+      }
+      const reject = (error) => {
+        if(this.status === PENDING) {
+          this.status = REJECTE
+          this.error = error
+          // 在调用reject时遍历函数
+          this.onRejectCallbacks.forEach(cb => cb())
+        }
+      }
+      //处理报错，捕获错误
+      try {
+        fn(resolve, reject) // 执行器，同步
+      }catch (err) {
+        reject(err)
+      }
+    }
+    //================then===========
+    then(onFulfilled, onRejected) {
+      const p2 = new MyPromise((resolve, reject) =>{
+        if(this.status === RESOLVE){
+          // onFulfilled(this.value)
+          // 12、then方法的两个参数必须都是异步执行的，不能再当前执行栈执行 可以使用queueMicrotask方法
+          queueMicrotask(() => {
+            try {
+              const x = onFulfilled(this.value)         //实现链式调用
+              resolvePromise(p2, x, resolve, reject)
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }
+        if(this.status === REJECTE){
+          queueMicrotask(() => {
+            try {
+              const x = onRejected(this.error)
+              resolvePromise(p2, x, resolve, reject)
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }
+        if (this.status === PENDING) {
+          // 成功回调的数组
+          this.onFulFillCallbacks.push(() => {
+            queueMicrotask(() => {
+              try {
+                const x = onFulfilled(this.value)         //实现链式调用
+                resolvePromise(p2, x, resolve, reject)
+              } catch (err) {
+                reject(err)
+              }
+            })
+          })
+          this.onRejectCallbacks.push(() => {
+            queueMicrotask(() => {
+              try {
+                const x = onRejected(this.error)
+                resolvePromise(p2, x, resolve, reject)
+              } catch (err) {
+                reject(err)
+              }
+            })
+          })
+        }
+      })
+      return p2
+    }
+
+    //=============catch===============
+    catch(onError) {}
+  }
+
+
+  const p = new MyPromise((resolve, reject) => {
+    setTimeout(() => {
+      reject(err)
+    }, 1000)
+    // resolve('jkc success')
+  })
+  p.then(res => {
+    console.log('onFulfilled11')
+  }, err => {
+    console.log('onRejected')
+  })
+
+</script>
+</body>
+</html>
