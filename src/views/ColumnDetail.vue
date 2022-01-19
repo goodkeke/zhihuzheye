@@ -17,8 +17,9 @@
 import {computed, defineComponent, onMounted, ref} from "vue";
 import {useRoute} from 'vue-router'
 import {useStore} from 'vuex'
-import {GlobalDataProps} from '../store/index'
+import {GlobalDataProps, ColumnProps} from '../store/index'
 import PostList from "../components/PostList.vue";
+import {generateFitUrl} from "../common/helper";
 
 export default defineComponent({
   name: "ColumnDetail",
@@ -34,7 +35,13 @@ export default defineComponent({
     const route = useRoute()
     // 为了让 computed 响应对应的变化，添加响应式对象
     const currentId = ref(route.params.id)  //转换为数据格式
-    const column = computed(() =>store.getters.getColumnById(currentId.value))
+    const column = computed(() =>{
+      const selectColumn = store.getters.getColumnById(currentId.value) as ColumnProps
+      if(selectColumn){
+        generateFitUrl(selectColumn, 100, 100)
+      }
+      return selectColumn
+    })
     const list =  computed(() =>store.getters.getPostsByCid(currentId.value))
     return{
       route,

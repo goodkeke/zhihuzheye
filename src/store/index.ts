@@ -7,7 +7,10 @@ const store = createStore<GlobalDataProps>({
         loading: false,
         columns: [],
         posts: [],
-        user: { isLogin: false}
+        user: {
+            isLogin: false,
+            column: ''
+        }
     },
     mutations: {
         createPost(state, newPost){
@@ -41,24 +44,28 @@ const store = createStore<GlobalDataProps>({
             state.token = ''
             state.user = {isLogin: false}
             localStorage.removeItem('token')
+            delete axios.defaults.headers.common.Authorization
             // router.push('/login')
         }
     },
     actions: {
         fetchColumns({commit}){
-            getAndCommit(`/columns`, 'fetchColumns', commit)
+            return getAndCommit(`/columns`, 'fetchColumns', commit)
         },
         fetchDetail({commit}, cid) {
-            getAndCommit(`/columns/${cid}`, 'fetchDetail', commit)
+            return getAndCommit(`/columns/${cid}`, 'fetchDetail', commit)
         },
         fetchPosts({commit}, cid) {
-            getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+            return getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
         },
         fetchCurrentUser({commit}){
             return getAndCommit(`/user/current`, 'fetchCurrentUser', commit)
         },
         login({commit}, payload){
             return postAndCommit(`/user/login`, 'login', commit, payload)
+        },
+        createPost({commit}, payload){
+            return postAndCommit(`/posts`, 'createPost', commit, payload)
         },
         loginAndFetch({dispatch}, loginData){
             return dispatch('login', loginData).then(() => {
@@ -110,12 +117,17 @@ export interface GlobalDataProps{
     posts: PostProps[]
     user: UserProps
 }
-
+export interface ResponseType<p = {}>{
+    _id: string
+    code?: string
+    msg: string
+    data: p
+}
 export interface UserProps {
     isLogin: boolean;
     nickName?: string;
     _id?: string;
-    column?: number;
+    column?: string;
     email?: string;
     avatar?: ImageProps;
     description?: string;
@@ -134,13 +146,14 @@ export interface ColumnProps {
 }
 
 export interface PostProps {
-    _id: number
-    title: string
+    _id?: number
+    title?: string
     excerpt?: string
     content?: string
-    image? : ImageProps
-    createdAt: string
-    column: string
+    image? : ImageProps | string
+    createdAt?: string
+    column?: string
+    author?: string
 }
 
 export default store

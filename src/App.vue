@@ -39,12 +39,12 @@ export default defineComponent({
     const isLoading = computed(() => store.state.loading)
     const token = computed(() => store.state.token)
     const error = computed(() => store.state.error)
-    onMounted(async () => {
-      if(!currentUser.value.isLogin && token.value){
-        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-        const data = await store.dispatch('fetchCurrentUser')
-      }
-    })
+    // onMounted(async () => {
+    //   if(!currentUser.value.isLogin && token.value){
+    //     axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+    //     const data = await store.dispatch('fetchCurrentUser')
+    //   }
+    // })
     // const closeMessage = (e: boolean) => {
     //   error.value.status = false
     // }

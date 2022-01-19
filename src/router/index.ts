@@ -5,6 +5,7 @@ import ColumnDetail from "../views/ColumnDetail.vue";
 import CreatePost from "../views/CreatePost.vue"
 import Signup from "../views/Signup.vue";
 import store from "../store";
+import axios from "axios";
 const routerHistory = createWebHashHistory()
 const router = createRouter({
     history: routerHistory, // 采用路由的类型, hash优点：支持旧版浏览器
@@ -34,7 +35,7 @@ const router = createRouter({
             meta: {     // 路由元信息
                 requiredLogin: true
             }
-        },,
+        },
         {
             path: '/signup',
             name: 'signup',
@@ -43,12 +44,45 @@ const router = createRouter({
     ]
 })
 router.beforeEach((to, from,next) => {
-    if(to.meta?.requiredLogin && !store.state.user.isLogin){
-        next({name: 'login'})
-    }else if (to.meta?.redirectAlreadyLogin && store.state.user.isLogin){
-        next('/')
-    }else {
-        next()
+    // if(to.meta?.requiredLogin && !store.state.user.isLogin){
+    //     next({name: 'login'})
+    // }else if (to.meta?.redirectAlreadyLogin && store.state.user.isLogin){
+    //     next('/')
+    // }else {
+    //     next()
+    // }
+    const {token, user} = store.state
+    const {redirectAlreadyLogin, requiredLogin} = to.meta
+    console.log('store.state====>', store.state)
+    if (!user.isLogin){
+        if(token){
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`
+            store.dispatch('fetchCurrentUser').then(() => {
+                if (redirectAlreadyLogin){
+                    next('/')
+                }else {
+                    next()
+                }
+            }).catch(err => {
+                console.error(err)
+                // localStorage.removeItem('token')
+                store.dispatch('logout')
+                next('login')
+            })
+        }else {
+            if (requiredLogin){
+                next('login')
+            }else {
+                next()
+            }
+        }
+    }else{
+        if (redirectAlreadyLogin){
+            next('/')
+        }else {
+            console.log('1111')
+            next()
+        }
     }
 })
 export default router
