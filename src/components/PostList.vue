@@ -1,8 +1,10 @@
 <template>
   <div class="post-list">
-    <article v-for="post in list" :key="post._id" class="card mb-3 shadow-sm text-start">
+    <article v-for="post in list"
+             :key="post._id"
+             class="card mb-3 shadow-sm text-start">
       <div class="card-body">
-        <h4>{{post.title}}</h4>
+        <h4><router-link :to="`/posts/${post._id}/`">{{post.title}}</router-link></h4>
         <div class="row my-3 align-items-center">
           <div class="col-3" v-if="post.image">
             <img :src="post.image.url" :alt="post.title" class="rounded-lg w-100 h-100">
@@ -17,6 +19,7 @@
 <script lang="ts">
 import {computed, defineComponent, PropType} from 'vue'
 import {PostProps} from '../store'
+import {generateFitUrl} from "../common/helper";
 
 export default defineComponent({
   props: {
@@ -25,8 +28,15 @@ export default defineComponent({
       required: true
     }
   },
-  setup(){
+  setup({emit}){
+    const posts = computed(() => {
+      return this.props.list.map(post => {
+        generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
+        return post
+      })
+    })
     return {
+      posts
     }
   }
 })

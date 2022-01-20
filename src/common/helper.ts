@@ -2,9 +2,12 @@ import {ColumnProps, ImageProps, UserProps} from "../store";
 
 export function addColumnAvatar(data: ColumnProps | UserProps, width: number, height: number){
     if(data.avatar){
-
+        generateFitUrl(data.avatar, width, height)
     }else {
-
+        const parseCol = data as ColumnProps
+        data.avatar = {
+            fitUrl: require(parseCol.title ? '@/assets/column.jpg' : '@/assets/avatar.jpg')
+        }
     }
 }
 
@@ -37,4 +40,8 @@ export function beforeUploadCheck(file: File, condition: CheckCondition) {
         passed: isVaildFormat && isValidSize,
         error
     }
+}
+
+export const objToArr = <T>(obj: {[key: string]: T}) => {
+    return Object.keys(obj).map(key => obj[key])
 }
