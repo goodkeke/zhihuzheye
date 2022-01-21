@@ -6,6 +6,7 @@
            @blur="validateInput"
             v-model="inputRef.val"
             v-bind="$attrs"/>
+<!--    @input="updateValue"-->
     <textarea v-else
               class="form-control"
               :class="{'is-invalid': inputRef.error}"
@@ -18,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, PropType, reactive} from 'vue'
+import {computed, watch, defineComponent, onMounted, PropType, reactive} from 'vue'
 import { emitter } from './ValidateForm.vue'
 
 interface RuleProp {
@@ -50,6 +51,9 @@ export default defineComponent({
       }),
       error: false,
       message: ''
+    })
+    watch(() => props.modelValue, (newValue) => {
+      inputRef.val = newValue  || ''
     })
     const validateInput = () => {
       if (props.rules){

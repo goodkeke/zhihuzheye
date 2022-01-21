@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, ref} from "vue";
+import {defineComponent, PropType, ref, watch} from "vue";
 import axios from "axios";
 type Uploadstatus = 'ready' | 'loading' | 'success' | 'error'// 字符串字变量
 type checkFunction = (file: File) =>  boolean
@@ -54,9 +54,24 @@ export default defineComponent({
       'succes': '上传成功',
       'error': '上传失败',
     })
-    const uploadedData =  ref(props.uploaded)
     const fileData = ref({})
-    const fileStatus = ref<Uploadstatus>('ready')
+    const fileStatus = ref<Uploadstatus>(props.uploaded ? 'success' : 'ready')
+
+    const uploadedData =  ref(props.uploaded)
+    // 在setup中拿到dom节点， 传入泛型
+    const fileInput = ref<null | HTMLInputElement>(null)
+    const triggerUpload = () => {
+      if(fileInput.value){    // dom节点存在
+        fileInput.value.click()
+      }
+    }
+    watch(() => props.uploaded,(newValue) => {
+      if (newValue){
+        fileStatus.value = 'success'
+        uploadedData.value = newValue
+      }
+    })
+
     const handlerFileChange = (e: Event) => {
       const target = e.target as HTMLInputElement
       if(target.files){
@@ -88,13 +103,6 @@ export default defineComponent({
             fileInput.value.value = ''
           }
         })
-      }
-    }
-    // 在setup中拿到dom节点， 传入泛型
-    const fileInput = ref<null | HTMLInputElement>(null)
-    const triggerUpload = () => {
-      if(fileInput.value){    // dom节点存在
-        fileInput.value.click()
       }
     }
     return {

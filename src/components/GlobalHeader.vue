@@ -39,7 +39,6 @@ export default defineComponent({
     }
   },
   setup(props){
-    console.log('props.user====>', props.user)
     const store = useStore<GlobalDataProps>()
     const logout = () => {
       store.dispatch('logout')

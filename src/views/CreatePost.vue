@@ -54,13 +54,13 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onUnmounted, ref} from "vue";
+import {defineComponent, onMounted, watch, ref} from "vue";
 import Upload from "../components/Upload.vue";
 import ValidateForm from "../components/ValidateForm.vue";
 import ValidateInput, {RulesProp} from "../components/ValidateInput.vue";
 import {GlobalDataProps, PostProps, ResponseType, ImageProps} from '../store'
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {beforeUploadCheck} from "../common/helper";
 import axios from "axios";
 import createMessage from "../components/CreateMessage";
@@ -69,8 +69,11 @@ export default defineComponent({
   name: "CreatePost",
   components: {ValidateInput, ValidateForm, Upload},
   setup() {
-    const uploadedData = ref()
+    const uploadedData = ref('')
     const router = useRouter()
+    const route = useRoute()
+    const isEditMode = !!route.query.id // 转化成boolean类型
+
     const store = useStore<GlobalDataProps>()
     let imageId = ''
     const titleVal = ref('')
@@ -81,6 +84,20 @@ export default defineComponent({
     const contentRules: RulesProp = [
       { type: 'required', message: '文章详情不能为空' }
     ]
+
+    onMounted(() => {
+      if(isEditMode){
+        store.dispatch('fetchPost', route.query.id).then((res: ResponseType<PostProps>) => {
+          const currentPost = res.data
+          console.log('currentPost', currentPost)
+          if(currentPost.image){
+            uploadedData.value = {data: currentPost.image}
+          }
+          titleVal.value = currentPost.title
+          contentVal.value = currentPost.content || ''
+        })
+      }
+    })
 
     const handleFileUploaded = (rowData: ResponseType<ImageProps>) => {
       if (rowData.data._id){
@@ -95,14 +112,15 @@ export default defineComponent({
             column,
             title: titleVal.value,
             content: contentVal.value,
-            author: _id
+            author: _id,
           }
           if(imageId){
             newPost.image = imageId
           }
           store.dispatch('createPost', newPost).then(() => {
-            createMessage('发表成功', 'success')
-            router.push({name: 'column', params: {id: column}})
+            setTimeout(() => {
+              router.push({ name: 'column', params: { id: column }})
+            }, 2000)
           })
         }
       }
@@ -155,6 +173,7 @@ export default defineComponent({
       contentVal,
       contentRules,
       onFormSubmit,
+      handleFileUploaded,
       handlerFileChange,
       fileUploaded,
       fileUploadedError,

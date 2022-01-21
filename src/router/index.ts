@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import ColumnDetail from "../views/ColumnDetail.vue";
@@ -7,7 +7,7 @@ import Signup from "../views/Signup.vue";
 import PostDetail from '../views/PostDetail.vue'
 import store from "../store";
 import axios from "axios";
-const routerHistory = createWebHashHistory()
+const routerHistory = createWebHistory()
 const router = createRouter({
     history: routerHistory, // 采用路由的类型, hash优点：支持旧版浏览器
     routes: [
