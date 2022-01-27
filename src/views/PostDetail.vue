@@ -1,5 +1,12 @@
 <template>
   <div class="post-detail-page">
+    <modal title="删除文章"
+           :visible="modalIsVisible"
+           @modal-on-close="modalIsVisible=false"
+           @modal-on-confirm="modalIsVisible=false"
+    >
+      <p>确定是否删除该篇文章？</p>
+    </modal>
     <article class="w-75 mx-auto mb-5 pb-3">
       <img :src="currentImageUrl" class="roun ded-lg img-fluid my-4" v-if="currentImageUrl"/>
       <h2 class="mb-4">{{currentPost.title}}</h2>
@@ -21,20 +28,23 @@
   </div>
 </template>
 <script lang="ts">
-import {computed, defineComponent, onMounted} from 'vue'
-import {PostProps, UserProps} from '../store'
+import {computed, defineComponent, onMounted, ref} from 'vue'
+import {PostProps, UserProps, ImageProps} from '../store'
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import UserProfile from "../components/UserProfile.vue";
+import Modal from "../components/Modal.vue";
+
 import MarkdownIt from "markdown-it";
 export default defineComponent({
   components: {
-    UserProfile
+    UserProfile, Modal
   },
   setup() {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
+    const modalIsVisible = ref(false)
     const currentId = route.params.id
     onMounted(() => {
       store.dispatch('fetchPost', currentId)
@@ -69,7 +79,8 @@ export default defineComponent({
       currentPost,
       currentHTML,
       currentImageUrl,
-      showEditArea
+      showEditArea,
+      modalIsVisible
     }
   }
 })

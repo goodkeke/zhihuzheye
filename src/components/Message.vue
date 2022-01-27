@@ -1,4 +1,4 @@
-<template>
+ <template>
   <teleport to="#message">
     <div class="alert message-info fixed-top w-50 mx-auto d-flex justify-content-between mt-2"
          :class="classObject" v-if="isVisible">
@@ -8,7 +8,7 @@
   </teleport>
 </template>
 <script lang="ts">
-import {defineComponent, onUnmounted, PropType, ref} from 'vue'
+import {defineComponent, PropType, ref} from 'vue'
 import useDOMCreate from '../hooks/useDOMCreate'
 export type MessageType = 'success' | 'error' | 'default'
 export default defineComponent({
