@@ -29,6 +29,16 @@
     return prev
   },[])
 
+  // Iterator（遍历器）的概念
+  function makeIterator(arr) {
+    let index = 0;
+    return {
+      next: function (){
+        return index < arr.length ? {value: arr[index++]} :  {done:true}
+      }
+    }
+  }
+    let value = makeIterator(['keke', 'bingbing', 'maji', 'bili', 'aye'])
 </script>
 </body>
 </html>

@@ -37,6 +37,9 @@ const store = createStore<GlobalDataProps>({
         fetchPost(state, rawData){
             state.posts.data[rawData.data._id] = rawData.data
         },
+        deletePost(state, { data }) {
+            delete state.posts.data[data._id]
+        },
         fetchCurrentUser(state, rawData){
             state.user = { ...rawData.data, isLogin: true}
         },
@@ -58,7 +61,7 @@ const store = createStore<GlobalDataProps>({
             localStorage.removeItem('token')
             delete axios.defaults.headers.common.Authorization
             // router.push('/login')
-        }
+        },
     },
     actions: {
         fetchColumns({ state, commit }, params = {}) {
@@ -104,11 +107,16 @@ const store = createStore<GlobalDataProps>({
         },
         logout({commit}){
             commit('setLogout')
-        }
+        },
         // async mLogin({commit}, params) {
         //     const data = await axios.post(`/user/login`, params)
         //     commit('login', data)
         // }
+        deletePost({ commit }, id){
+            return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, {
+                method: 'delete'
+            })
+        }
     },
     getters: { // getters返回值会依赖根据缓存，且当依赖值发生改变时才会被重新计算
         getColumns(state){
@@ -118,7 +126,6 @@ const store = createStore<GlobalDataProps>({
             return state.columns.data[id]
         },
         getPostsByCid:(state)=>(cid: string) => {
-            // return state.posts.filter(c => c.column === cid)
             return objToArr(state.posts.data).filter(post => post.column === cid)
         },
         getCurrentPost: (state) => (id: string) => {

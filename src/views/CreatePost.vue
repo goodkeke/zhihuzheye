@@ -191,4 +191,7 @@ export default defineComponent({
   text-align: right;
   padding-right: 5px;
 }
+::v-deep .validate-input-container textarea.form-control{
+  height: 200px !important;
+}
 </style>

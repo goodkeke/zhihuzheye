@@ -10,6 +10,7 @@ const createMessage = (message: string, type: string, timeout = 2000) => {
     document.body.appendChild(node)
     messageAlert.mount(node)
     setTimeout(() => {
+        // @ts-ignore
         messageAlert.unmount(node)
         document.body.removeChild(node)
     }, timeout)

@@ -3,6 +3,7 @@ import axios from "axios";
 import store from "./store"
 import router from './router'
 import App from './App.vue'
+import Modal from "@/components/Modal.vue";
 
 const icode = 'AB45921CA1348422'
 axios.defaults.baseURL = 'http://apis.imooc.com/api/'

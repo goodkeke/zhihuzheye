@@ -3,11 +3,11 @@
     <modal title="删除文章"
            :visible="modalIsVisible"
            @modal-on-close="modalIsVisible=false"
-           @modal-on-confirm="modalIsVisible=false"
+           @modal-on-confirm="hideAndDelete"
     >
       <p>确定是否删除该篇文章？</p>
     </modal>
-    <article class="w-75 mx-auto mb-5 pb-3">
+    <article class="w-75 mx-auto mb-5 pb-3" v-if="currentPost">
       <img :src="currentImageUrl" class="roun ded-lg img-fluid my-4" v-if="currentImageUrl"/>
       <h2 class="mb-4">{{currentPost.title}}</h2>
       <div class="user-profile-component border-top border-bottom py-3 mb-5 align-items-center row g-0">
@@ -29,11 +29,12 @@
 </template>
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from 'vue'
-import {PostProps, UserProps, ImageProps} from '../store'
+import {PostProps, UserProps, ImageProps, ResponseType, GlobalDataProps} from '../store'
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import UserProfile from "../components/UserProfile.vue";
 import Modal from "../components/Modal.vue";
+import createMessage from "../components/CreateMessage";
 
 import MarkdownIt from "markdown-it";
 export default defineComponent({
@@ -43,13 +44,16 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const router = useRouter()
-    const store = useStore()
+    const store = useStore<GlobalDataProps>()
     const modalIsVisible = ref(false)
     const currentId = route.params.id
+    console.log('currentId00000000000000000', currentId)
     onMounted(() => {
       store.dispatch('fetchPost', currentId)
     })
     const currentPost = computed<PostProps>(() => store.getters.getCurrentPost(currentId))
+    console.log('currentPost11111111111', currentPost.value)
+    console.log('currentId2222222222222', currentId)
     const md = new MarkdownIt()
     const currentHTML = computed(() => {
       const {content, isHTML} = currentPost.value
@@ -74,13 +78,23 @@ export default defineComponent({
         return false
       }
     })
+    const hideAndDelete = () => {
+      modalIsVisible.value = false
+      store.dispatch('deletePost', currentId).then((rawData: ResponseType<PostProps>) => {
+        createMessage('刪除成功', 'success', 2000)
+        setTimeout(() => {
+          router.push({name: 'column', params: {id: rawData.data.column}})
+        }, 2000)
+      })
+    }
     return {
       currentId,
       currentPost,
       currentHTML,
       currentImageUrl,
       showEditArea,
-      modalIsVisible
+      modalIsVisible,
+      hideAndDelete
     }
   }
 })

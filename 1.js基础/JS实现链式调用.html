@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS实现链式调用</title>
+</head>
+<body>
+<script>
+    //--------------------------------
+    function method() {
+      console.log('初始化')
+    }
+    method.prototype.way = function (params){
+      console.log('params====>', params)
+      // console.log('this====>', this)
+      return this;
+    }
+    const val = new method()
+    val.way('111111').way('2222222').way('333333')
+
+    //--------------------------------
+    var obj = {
+      a:function (){
+        console.log('a====>')
+        return this
+      },
+      b:function (){
+        console.log('b====>')
+        return this
+      },
+    }
+    obj.a().b()
+
+    //--------------------------------
+    class Math {
+      constructor(value) {
+        this.value = 0
+        this.name = '链式调用'
+      }
+      add() {
+        var arg = [...arguments]
+        console.log('arg======>', arg)
+        this.value = arg.reduce((pre,cur) => pre + cur, this.value)
+        return this
+      }
+      minus() {
+        let arg = [...arguments]
+        this.value = arg.reduce((pre, cur) => pre - cur, this.value)
+        return this
+      }
+      mul() {
+        let arg = [...arguments]
+        this.value = arg.reduce((pre, cur) => pre * cur, this.value)
+        return this
+      }
+      divide() {
+        let arg = [...arguments]
+        this.value = arg.reduce((pre, cur) => pre/cur, this.value)
+        return this;
+      }
+    }
+    const tval = new Math()
+    const res = tval.add(8,9,3).minus(1,5).mul(2,2,2).divide(7)
+    console.log('res====>', res)
+
+</script>
+</body>
+</html>

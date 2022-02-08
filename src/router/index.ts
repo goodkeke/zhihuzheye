@@ -86,7 +86,6 @@ router.beforeEach((to, from,next) => {
         if (redirectAlreadyLogin){
             next('/')
         }else {
-            console.log('1111')
             next()
         }
     }
