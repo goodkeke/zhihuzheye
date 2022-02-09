@@ -65,7 +65,7 @@ const store = createStore<GlobalDataProps>({
     },
     actions: {
         fetchColumns({ state, commit }, params = {}) {
-            const { currentPage = 1, pageSize = 6 } = params
+            const { currentPage = 1, pageSize = 5 } = params
             // if (!state.columns.isLoaded) {
             //   return asyncAndCommit('/columns', 'fetchColumns', commit)
             // }

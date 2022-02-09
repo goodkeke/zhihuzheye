@@ -59,7 +59,6 @@ router.beforeEach((to, from,next) => {
     // }
     const {token, user} = store.state
     const {redirectAlreadyLogin, requiredLogin} = to.meta
-    console.log('store.state====>', store.state)
     if (!user.isLogin){
         if(token){
             axios.defaults.headers.common.Authorization = `Bearer ${token}`

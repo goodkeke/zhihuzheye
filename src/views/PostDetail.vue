@@ -47,13 +47,11 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>()
     const modalIsVisible = ref(false)
     const currentId = route.params.id
-    console.log('currentId00000000000000000', currentId)
     onMounted(() => {
       store.dispatch('fetchPost', currentId)
     })
     const currentPost = computed<PostProps>(() => store.getters.getCurrentPost(currentId))
-    console.log('currentPost11111111111', currentPost.value)
-    console.log('currentId2222222222222', currentId)
+
     const md = new MarkdownIt()
     const currentHTML = computed(() => {
       const {content, isHTML} = currentPost.value
