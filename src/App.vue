@@ -27,7 +27,6 @@ import GlobalHeader from "./components/GlobalHeader.vue";
 import Loader from "./components/Loader.vue";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import axios from "axios";
-// import Message from "./components/Message.vue";
 import createMessage from "./components/CreateMessage";
 export default defineComponent({
   components: {
@@ -39,15 +38,6 @@ export default defineComponent({
     const isLoading = computed(() => store.state.loading)
     const token = computed(() => store.state.token)
     const error = computed(() => store.state.error)
-    // onMounted(async () => {
-    //   if(!currentUser.value.isLogin && token.value){
-    //     axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-    //     const data = await store.dispatch('fetchCurrentUser')
-    //   }
-    // })
-    // const closeMessage = (e: boolean) => {
-    //   error.value.status = false
-    // }
     watch(() => error.value.status, () => {
       const {status, message} = error.value
       if(status && message) {
